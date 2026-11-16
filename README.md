@@ -1,4 +1,4 @@
-# 3bs (Beeneys Boring Build System)
+# 3bs (Bourne Boring Build System)
 
 A clean, opinionated &amp; simple build system for small to medium sized
 projects, written in C. Allowing for easy dependency management and
