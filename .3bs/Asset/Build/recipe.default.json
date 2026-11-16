@@ -1,0 +1,16 @@
+{
+    "name" : "out"
+
+  , "comp" : { "out" : [""]
+             }
+
+  , "flag" : { "out" : [""]
+             }
+            
+  , "link" : { "out" : ["-flto"]
+             }
+
+  , "tool" : { "compiler" : "cc"
+             , "linker"   : "cc"
+             }
+}

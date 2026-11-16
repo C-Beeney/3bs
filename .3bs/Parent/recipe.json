@@ -1,0 +1,19 @@
+{
+    "name" : "hello",
+
+    "comp" : { "hello" : ["main.c"]
+             },
+
+    "flag" : { "main.c" : ["-O0", "-g"]
+             },
+
+    "link" : { "hello" : ["-flto"]
+             },
+
+    "tool" : { "compiler" : "cc",
+               "linker"   : "cc"
+             },
+
+    "deps" : { "gh"       : ["C-Beeney/Muc"]
+             }
+}

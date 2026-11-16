@@ -1,7 +1,8 @@
 # 3bs (Beeneys Boring Build System)
 
-A clean, opinionated &amp; simple build system for small to medium sized projects, written in C.
-Allowing for easy dependency management and cross-platform building / testing.  
+A clean, opinionated &amp; simple build system for small to medium sized
+projects, written in C. Allowing for easy dependency management and
+cross-platform building / testing.  
 
 ## To install  
 
@@ -14,6 +15,20 @@ Allowing for easy dependency management and cross-platform building / testing.
 
     Managing dependencies:
 
-        . deps.json is where you notate dependencies e.g. {"gh":["Torvalds/Linux"],"git":["someurl"]}
-        . When a dependency is installed with ```sh 3bs GetDependency``` Tool/DependencyHandler/DependencyName Transform() is called.  
-            It is within Transform() that you write the code that handles the dependency ready for use.  
+        . recipe.json .deps is where you notate dependencies e.g.
+          {"gh":["Torvalds/Linux"],"git":["someurl"]}.  
+        . When a dependency is installed with ```sh 3bs get-dependencies```
+          Tool/Dependency/Name Init() is called. It is within Init() that you
+          write the code that handles the dependency ready for use. $1 is set
+          to a temporary path created as a scratch-area.  
+
+    Project management:
+        
+        . W.I.P!  
+        . recipe.json is how the structure of the project is notated.  
+        . .name : "Project name"  
+        . .comp : { ... }  
+        . .flag : { ... }  
+        . .link : { ... }  
+        . .tool : { ... }  
+        . .deps : { "method" : [locations] }  

@@ -10,7 +10,7 @@ _DisplayTrace "Arguments: $@"
 rm -fr Dependency/
 
 ConsoleCommands=$(
-    cat deps.json | handlerpath=".3bs/Asset" \
+    cat deps.json | handlerpath=".3bs/Asset/GetDependency/deps.handler.json" \
         $here/ResolveConsoleCommands
 )
 
@@ -27,5 +27,5 @@ do
     test -z "$tmpdir" && _DisplayError "temporary directory has not been set!\n\r\tExitting!" && exit 1
 
     # If a handler exists, run its Init function
-    test -f "$handler" && bash "$handler" _Init "$tmpdir"
+    test -f "$handler" && bash "$handler" Init "$tmpdir"
 done

@@ -1,4 +1,7 @@
-#!/usr/bin/env -S jq -rf --slurpfile backend ${handlerpath}/deps.handler.json
+#!/bin/sh
+# \
+exec jq -r --slurpfile backend "${handlerpath:?set handlerpath}" -f "$0" "$@"
+
 . as $inp |
 (   $backend[0].environment
   + (.environment // {})
