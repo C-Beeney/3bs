@@ -2,31 +2,34 @@
 # \
 exec jq -r --slurpfile backend "${handlerpath:?set handlerpath}" -f "$0" "$@"
 
-. as $inp |
-(   $backend[0].environment
-  + (.environment // {})
-) as $env |
 
-del(.environment) |
+.deps
 
-(   ($backend[0] | del(.environment))
-  + ($inp.handler // {})
-) as $preprocessed_method |
+| ($backend[0].environment + (.environment // {})) as $env
 
-del(.handler) as $dep |
+| (
+  ($backend[0] | del(.environment)) + (.handler // {})
+) as $preprocessed_method
 
-(   $preprocessed_method | with_entries( .value |=
-        gsub("§(?<macro>[^§]+)§" ; $env[.macro] // "[MACRO UNDEFINED]")
-)   ) as $method |
+| del(.handler) as $dep
 
-(   $dep | to_entries[] |
-        .key as $k |
-        .value[] as $val |
-    if $method[$k] then
-        "\($method[$k])" | gsub("\\{}"; "\($val|tostring)")
+| (
+  $preprocessed_method
+  | with_entries(
+    .value |=
+      gsub("§(?<macro>[^§]+)§" ; $env[.macro] // "[MACRO UNDEFINED]")
+    )
+) as $method
+
+| (
+  $dep
+  | to_entries[]
+  | .key as $k
+  | .value[] as $val
+  | if $method[$k] then
+      "\($method[$k])"
+      | gsub("\\{}"; "\($val|tostring)")
     else
-        "\u001b[31mUnknown handler: \"\($k)\" \(. )\u001b[0m"
+      "\u001b[31mUnknown handler: \"\($k)\" \(. )\u001b[0m"
     end
-) as $out |
-
-$out
+)

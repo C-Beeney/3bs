@@ -2,6 +2,5 @@
 
 source .3bs/*essential.sh
 
-echo "Cleaning project..."
-echo "Arguments: $@"
+rm -fr Binary Object Temp Dependency
 # Clean logic here

@@ -117,7 +117,7 @@ def compile_command($group; $compiler; $index):
         "out_dir=$1; shift; for file do "
         + "object=\"$out_dir/${file%.c}.o\"; "
         + "mkdir -p \"${object%/*}\" || exit $?; "
-        + $compiler_command + " -c -o \"$object\" \"$file\" || exit $?; "
+        + $compiler_command + " -IHeader/ -c -o \"$object\" \"$file\" || exit $?; "
         + "done"
       ) as $body
     | (
@@ -164,7 +164,7 @@ def component_commands($name; $index; $entries; $flags; $compiler):
 | (
     [$tools.linker]
     + ($order | reverse | map("Object/" + . + ".a"))
-    + ["-o", ("Binary/" + $name + ".elf")]
+    + ["-o", ("Binary/" + $name)]
     + ($link[$name] // [])
     | shell_args
   ) as $link_command

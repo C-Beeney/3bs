@@ -1,34 +1,25 @@
-#!/bin/bash
-
-##############################################################################
-# Copyright (c) 2026 Connor R. Beeney                                        #
-#                                                                            #
-# Permission to use, copy, modify, and/or distribute this software for       #
-# any purpose with or without fee is hereby granted.                         #
-#                                                                            #
-# THE SOFTWARE IS PROVIDED “AS IS” AND THE AUTHOR DISCLAIMS ALL              #
-# WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES   #
-# OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE     #
-# FOR ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY         #
-# DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN #
-# AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT    #
-# OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.          #
-##############################################################################
+: '############################################################################'
+: '# Copyright (c) 2026 Connor R. Beeney                                      #'
+: '#                                                                          #'
+: '# Permission to use, copy, modify, and/or distribute this software for     #'
+: '# any purpose with or without fee is hereby granted.                       #'
+: '#                                                                          #'
+: '# THE SOFTWARE IS PROVIDED “AS IS” AND THE AUTHOR DISCLAIMS ALL            #'
+: '# WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES #'
+: '# OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE   #'
+: '# FOR ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY       #'
+: '# DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER  #'
+: '# IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING   #'
+: '# OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.    #'
+: '############################################################################'
 
 set -eu
 
-source .3bs/*essential.sh
-
-if [ "$(ps -p $$ -o comm=)" = "sh" ]
-then
-    _DisplayWarning "This script does not support sh. Re-invoking with bash..."
-    /bin/bash $0 $@
-    exit $?
-fi
+. .3bs/*essential.sh
 
 # If we are in dev-test mode, enable debug and shift args
 devtoggle=""
-if [ "${1-}" = "dev-test" ]
+if test "x${1-}" = "xdev-test"
 then
     devtoggle="$1"
     shift
@@ -37,67 +28,40 @@ else
     set -e
 fi
 
-# Build the project
-_Build() {
-    .3bs/Tool/Build/Build $devtoggle $@
-}
-
-# Run user-defined unit-tests
-_Test() {
-    echo "Running tests..."
-    echo "Arguments: $@"
-    # Test logic here
-}
-
-# Show help information
-_Help() {
-    echo "Available commands:"
-    echo "  build               Build the project"
-    echo "  test                Run tests"
-    echo "  help                Show this help message"
-    echo "  clean               Clean build artifacts"
-    echo "  update              Update dependencies"
-    echo "  version             Show version information"
-    echo "  get-dependencies    Get project dependencies"
-}
-
-# Show version information
-_Version() {
-    _DisplayInfo "Version: `cat .3bs/Asset/current.ver`"
-}
-
-# Don't allow calling internal functions or empty commands
-if [ "${1-}:0:1" == "_" ] || [ "${1-}" == "" ]
-then
-    _DisplayError "Command not found"
-    exit 1
-fi
-
 # Translate CLI arg to function call
-case $1 in
+case "$1" in
     "build" )
-        shift && _Build $@
+        shift && . .3bs/Tool/Build/Build $devtoggle $@
         ;;
     "test" )
-        shift && _Test $@
+        shift && _DisplayError "NOT IMPLEMENTED YET!" && exit 1
         ;;
     "help" )
-        shift && _Help $@
+        shift
+        echo "Available commands:"
+        echo "  build               Build the project"
+        echo "  test                Run tests"
+        echo "  help                Show this help message"
+        echo "  clean               Clean build artifacts"
+        echo "  update              Update dependencies"
+        echo "  version             Show version information"
+        echo "  get-dependencies    Get project dependencies"
         ;;
     "clean" )
-        shift && .3bs/Tool/Clean/Clean $devtoggle $@
+        shift && . .3bs/Tool/Clean/Clean $devtoggle $@
         ;;
     "update" )
-        shift && .3bs/Tool/Update/Update $devtoggle $@
+        shift && . .3bs/Tool/Update/Update $devtoggle $@
         ;;
     "version" )
-        shift && _Version $@
+        shift && _DisplayInfo "Version: `cat .3bs/Asset/current.ver`"
         ;;
     "get-dependencies" )
-        shift && .3bs/Tool/GetDependency/GetDependency $devtoggle $@
+        shift && . .3bs/Tool/GetDependency/GetDependency $devtoggle $@
         ;;
     * )
         _DisplayError "Command not found"
+        _DisplayInfo "Consider running 'sh 3bs help' for valid commands."
         exit 1
         ;;
 esac

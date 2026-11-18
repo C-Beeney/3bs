@@ -1,47 +1,62 @@
-#!/bin/bash
+: '############################################################################'
+: '# Copyright (c) 2026 Connor R. Beeney                                      #'
+: '#                                                                          #'
+: '# Permission to use, copy, modify, and/or distribute this software for     #'
+: '# any purpose with or without fee is hereby granted.                       #'
+: '#                                                                          #'
+: '# THE SOFTWARE IS PROVIDED “AS IS” AND THE AUTHOR DISCLAIMS ALL            #'
+: '# WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES #'
+: '# OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE   #'
+: '# FOR ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY       #'
+: '# DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER  #'
+: '# IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING   #'
+: '# OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.    #'
+: '############################################################################'
 
-set -e
-
-# If started from sh restart in bash
-if [ -z "$BASH_VERSION" ]; then
-    /bin/bash $0 $@
-    exit $?
-fi
-
-# If dev-test passed, enable debug and shift arg
+: "If dev-test passed, enable debug and shift arg"
 devtest_toggle=0
-if [ "$1" = "dev-test" ]; then
+if test "${1-}" = "dev-test"
+then
     shift
     devtest_toggle=1
-    set -xe
+    set -x
 fi
 
-test () {
+if test "_${1-}" = "_perform"
+then
+    shift
 
-    # If "clean" argument is given, remove test directory
-    if [ "$1" = "clean" ]; then
-        shift && rm -fr test
+    : "If 'clean' argument is given, remove test directory"
+    if test "_${1-}" = "_clean"
+    then
+        rm -fr "`pwd`/test"
+
+        exit
     fi
 
-    # Create test directory if it does not exist and populate it
-    if [ ! -d "test" ]; then
-        mkdir test && cp -far `ls -A . | sed "s/test//g"` test/
-        rm -fr test/test # Remove nested test dir
+    : "Create test directory if it does not exist and populate it"
+    if test "_${1-}" = "_install"
+    then
 
-        # Run install script in test dir to set up 3bs there
-        if [ "$1" = "install" ]; then
-            pushd test
-                bash .3bs/install $([ $devtest_toggle -eq 1 ] && echo "dev-test")
-            popd
+        if test -d "test"
+        then
+            rm -fr test
+        fi
+
+        mkdir test && cp -fa `printf "%s\n" .* * | sed '/^\.\{1,2\}$/d; /test/d'` test/
+        rm -fr test/test ;: "Remove nested test dir"
+
+        : "Run install script in test dir to set up 3bs there, clean on fail"
+        (
+            cd test
+            sh -c ".3bs/install `test $devtest_toggle -eq 1 && echo 'dev-test'`"
+        )
+
+        status=$?
+        if test "$status" -ne 0
+        then rm -fr test && exit "$status"
         fi
 
         exit 0
-    else
-        echo "Test directory already exists."
-        echo "Remove or rename the existing 'test' directory and try again."
-        exit 1
     fi
-
-}
-
-$@
+fi

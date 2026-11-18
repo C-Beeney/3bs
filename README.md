@@ -1,8 +1,9 @@
-# 3bs (Bourne Boring Build System)
+# 3bs (Boring Bourne Build System)
 
 A clean, opinionated &amp; simple build system for small to medium sized
-projects, written in C. Allowing for easy dependency management and
-cross-platform building / testing.  
+projects written in C. Allowing for easy dependency management and
+cross-platform building / testing. Working towards full Unix V7 & IEEE1003.2
+bourne shell compatibility.  
 
 ## To install  
 
